@@ -1,0 +1,14 @@
+../Core/Src/vehiclefulectri.c:26:6:sendFuelEconomyMessage	1
+../Core/Src/vehiclefulectri.c:42:6:sendSystemStatusMessage	1
+../Core/Src/vehiclefulectri.c:57:6:sendFuelStatusMessage	1
+../Core/Src/vehiclefulectri.c:73:6:sendBatteryStatusMessage	1
+../Core/Src/vehiclefulectri.c:90:6:sendNavigationStatusMessage	1
+../Core/Src/vehiclefulectri.c:106:6:sendClimatControlMessage	1
+../Core/Src/vehiclefulectri.c:122:6:sendTireStatusMessage	1
+../Core/Src/vehiclefulectri.c:138:6:FuelEconomy_Ctrl	14
+../Core/Src/vehiclefulectri.c:163:6:FuelStatus_Status	14
+../Core/Src/vehiclefulectri.c:187:6:BatteryStatus_Status	8
+../Core/Src/vehiclefulectri.c:213:6:ClimatControl_Status	5
+../Core/Src/vehiclefulectri.c:230:6:NavigationStatus_Status	5
+../Core/Src/vehiclefulectri.c:250:6:TireStatus_Status	5
+../Core/Src/vehiclefulectri.c:276:6:handleCANRxMessage	15
