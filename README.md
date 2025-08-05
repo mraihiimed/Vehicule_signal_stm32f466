@@ -1,9 +1,3 @@
-Of course. Here is a comprehensive README.md template tailored for your STM32 vehicle signaling project, building upon the details you provided.
-
-You can copy and paste this directly into your `README.md` file.
-
------
-
 # 🚗 Vehicule Signal STM32F466
 
 [](https://www.google.com/search?q=https://github.com/YOUR_USERNAME/YOUR_REPO/actions)
