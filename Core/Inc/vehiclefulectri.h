@@ -1,9 +1,10 @@
 /*
- * vehicleFuleCtri.h
+ * vehiculefulelectric.h
  *
  *  Created on: Jul 28, 2025
- *      Author: Alok Kumar Swain
+ *      Author: Geek
  */
+
 
 #ifndef INC_VEHICLEFULECTRI_H_
 #define INC_VEHICLEFULECTRI_H_

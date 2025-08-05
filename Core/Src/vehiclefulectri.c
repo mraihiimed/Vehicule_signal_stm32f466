@@ -1,9 +1,10 @@
 /*
- * vehiclefulectri.c
+ * vehiculefulelectric.c
  *
  *  Created on: Jul 28, 2025
- *      Author: Alok Kumar Swain
+ *      Author: Geek
  */
+
 
 
 #include "vehiclefulectri.h"
