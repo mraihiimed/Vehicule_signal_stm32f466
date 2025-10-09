@@ -22,6 +22,8 @@
 #include "usart.h"
 #include "gpio.h"
 #include <stdio.h>
+#include <string.h>
+#include <math.h>
 
 #include "vehiclefulectri.h"
 
@@ -42,7 +44,7 @@
 
 /* Private macro -------------------------------------------------------------*/
 /* USER CODE BEGIN PM */
-
+extern MotionRaw_T MotionRaw;
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
@@ -53,6 +55,15 @@ CAN_RxHeaderTypeDef RxHeader;
 uint8_t TxData[8];
 uint8_t RxData[8];
 uint32_t TxMailbox;
+
+/********************/
+#define MAX_LOG 10
+float tempLog[MAX_LOG];
+float humidityLog[MAX_LOG];
+uint8_t logIndex = 0;
+/********************/
+//SubsystemMode_T activeSubsystem = SUBSYSTEM_ENGINE;
+
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -63,7 +74,47 @@ void SystemClock_Config(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+void uart_send_char(char c) {
+    while (!(USART2->SR & USART_SR_TXE)); // Wait until TX buffer is empty
+    USART2->DR = c;
+}
+void uart_send_string(const char *str) {
+    HAL_UART_Transmit(&huart2, (uint8_t *)str, strlen(str), HAL_MAX_DELAY);
+}
+char uart_receive_char(void) {
+    while (!(USART2->SR & USART_SR_RXNE)); // Wait until data is received
+    return USART2->DR;
+}
+//
+void handleDHT11Frame(uint8_t* data)
+{
+    float temp = data[0] / 10.0f;
+    float humidity = data[1] / 10.0f;
 
+    // Log or act on the values
+    printf("Received Temp: %.1f°C, Humidity: %.1f%%\r\n", temp, humidity);
+    // Optional: log or act on values
+	char msg[64];
+	snprintf(msg, sizeof(msg), "DHT11 → Temp: %.1f°C, RH: %.1f%%\r\n", temp, humidity);
+	uart_send_string(msg);
+    // Optional: trigger cooling, alerts, or store in buffer
+    if (temp > 30.0f || humidity >80.0f)
+    {
+        HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_SET); // Turn on warning LED
+    }
+    else
+    {
+        HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_RESET);
+    }
+
+}
+
+void logDHT11(float temp, float humidity)
+{
+    tempLog[logIndex] = temp;
+    humidityLog[logIndex] = humidity;
+    logIndex = (logIndex + 1) % MAX_LOG;
+}
 /* USER CODE END 0 */
 
 /**
@@ -97,9 +148,19 @@ int main(void)
   MX_GPIO_Init();
   MX_CAN1_Init();
   MX_USART2_UART_Init();
+  printf("USART is working!\r\n");
+  printf("USART test: value = %.2f\n", 123.45);
+
+
   /* USER CODE BEGIN 2 */
   // Start CAN peripheral
   if (HAL_CAN_Start(&hcan1) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  // Start UART peripheral
+
+  if ( HAL_UART_Init(&huart2) != HAL_OK)
   {
     Error_Handler();
   }
@@ -109,56 +170,28 @@ int main(void)
   {
     Error_Handler();
   }
-
-  // Configure CAN TX Header
-  TxHeader.DLC = 8;
-  TxHeader.IDE = CAN_ID_STD;
-  TxHeader.RTR = CAN_RTR_DATA;
-  TxHeader.StdId = 0x321;
-
-  // Load sample data
-  TxData[0] = 0x11;
-  TxData[1] = 0x22;
-  TxData[2] = 0x33;
-  TxData[3] = 0x44;
-  TxData[4] = 0x55;
-  TxData[5] = 0x66;
-  TxData[6] = 0x77;
-  TxData[7] = 0x88;
+  printf("Node B ready\r\n");
 
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
-       {
-	    // Send CAN message
-	    if (HAL_CAN_AddTxMessage(&hcan1, &TxHeader, TxData, &TxMailbox) != HAL_OK)
-	    {
-	      Error_Handler();
-	    }
+      {
+	    printf("ax=%d gx=%d → status=%d\r\n", MotionRaw.ax, MotionRaw.gx, MotionRaw.status);
 
-	    // Wait 1 second
-	    HAL_Delay(1000); // just idle loop
+	    HAL_Delay(100); // just idle loop
 	  }
   /* USER CODE END 3 */
 }
-
-
 void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
 {
     CAN_RxHeaderTypeDef RxHeader;
     uint8_t RxData[8];
-
     HAL_CAN_GetRxMessage(hcan, CAN_RX_FIFO0, &RxHeader, RxData);
-
-    handleCANRxMessage(RxHeader.StdId, RxData, RxHeader.DLC);
-
-    HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_5);  // Blink LED when message received
+	handleCANRxMessage(RxHeader.StdId, RxData, RxHeader.DLC);
+	HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_5);  // Blink LED when message received
 }
-
-
-
 /**
   * @brief System Clock Configuration
   * @retval None

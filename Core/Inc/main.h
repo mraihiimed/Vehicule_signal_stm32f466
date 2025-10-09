@@ -59,7 +59,10 @@ void Error_Handler(void);
 /* Private defines -----------------------------------------------------------*/
 
 /* USER CODE BEGIN Private defines */
-
+void handleDHT11Frame(uint8_t* data);
+void uart_send_string(const char *str);
+void uart_send_char(char c) ;
+char uart_receive_char(void) ;
 /* USER CODE END Private defines */
 
 #ifdef __cplusplus

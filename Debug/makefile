@@ -34,34 +34,34 @@ $(wildcard ../makefile.init) \
 $(wildcard ../makefile.targets) \
 
 
-BUILD_ARTIFACT_NAME := can
+BUILD_ARTIFACT_NAME := can_telemetry_NodeB
 BUILD_ARTIFACT_EXTENSION := elf
 BUILD_ARTIFACT_PREFIX :=
 BUILD_ARTIFACT := $(BUILD_ARTIFACT_PREFIX)$(BUILD_ARTIFACT_NAME)$(if $(BUILD_ARTIFACT_EXTENSION),.$(BUILD_ARTIFACT_EXTENSION),)
 
 # Add inputs and outputs from these tool invocations to the build variables 
 EXECUTABLES += \
-can.elf \
+can_telemetry_NodeB.elf \
 
 MAP_FILES += \
-can.map \
+can_telemetry_NodeB.map \
 
 SIZE_OUTPUT += \
 default.size.stdout \
 
 OBJDUMP_LIST += \
-can.list \
+can_telemetry_NodeB.list \
 
 
 # All Target
 all: main-build
 
 # Main-build Target
-main-build: can.elf secondary-outputs
+main-build: can_telemetry_NodeB.elf secondary-outputs
 
 # Tool invocations
-can.elf can.map: $(OBJS) $(USER_OBJS) C:\Can_ws\can\STM32F446RETX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-gcc -o "can.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"C:\Can_ws\can\STM32F446RETX_FLASH.ld" --specs=nosys.specs -Wl,-Map="can.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+can_telemetry_NodeB.elf can_telemetry_NodeB.map: $(OBJS) $(USER_OBJS) C:\Can_ws\can_telemetry_NodeB\STM32F446RETX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-gcc -o "can_telemetry_NodeB.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"C:\Can_ws\can_telemetry_NodeB\STM32F446RETX_FLASH.ld" --specs=nosys.specs -Wl,-Map="can_telemetry_NodeB.map" -Wl,--gc-sections -static -u _printf_float --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 
@@ -70,14 +70,14 @@ default.size.stdout: $(EXECUTABLES) makefile objects.list $(OPTIONAL_TOOL_DEPS)
 	@echo 'Finished building: $@'
 	@echo ' '
 
-can.list: $(EXECUTABLES) makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-objdump -h -S $(EXECUTABLES) > "can.list"
+can_telemetry_NodeB.list: $(EXECUTABLES) makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-objdump -h -S $(EXECUTABLES) > "can_telemetry_NodeB.list"
 	@echo 'Finished building: $@'
 	@echo ' '
 
 # Other Targets
 clean:
-	-$(RM) can.elf can.list can.map default.size.stdout
+	-$(RM) can_telemetry_NodeB.elf can_telemetry_NodeB.list can_telemetry_NodeB.map default.size.stdout
 	-@echo ' '
 
 secondary-outputs: $(SIZE_OUTPUT) $(OBJDUMP_LIST)
